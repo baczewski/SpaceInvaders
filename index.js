@@ -79,6 +79,41 @@ class Projectile {
     }
 }
 
+class Invader {
+    constructor() {
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+
+        const image = new Image();
+        image.src = './assets/invader.png';
+        image.onload = () => {
+            const scale = 1;
+
+            this.image = image;
+            this.width = image.width * scale;
+            this.height = image.height * scale;
+
+            this.position = {
+                x: canvas.width / 2 - this.width / 2,
+                y: canvas.height / 2 - this.height / 2
+            };
+        }
+    }
+
+    draw() {
+        context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);    
+    }
+
+    update() {
+        if (this.image) {
+            this.draw();
+            this.position.x += this.velocity.x;
+        }
+    }
+}
+
 const keys = {
     a: { 
         pressed: false
@@ -91,6 +126,7 @@ const keys = {
     }
 };
 
+const invader = new Invader();
 const player = new Player();
 const projectiles = [];
 
@@ -99,6 +135,7 @@ function animate() {
     context.fillStyle = 'black';
     context.fillRect(0, 0, canvas.width, canvas.height);
     player.update();
+    invader.update();
 
     projectiles.forEach((projectile, index) => {
         if (projectile.position.y + projectile.radius <= 0) {
