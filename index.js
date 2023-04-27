@@ -11,6 +11,7 @@ class Player {
             y: 0
         };
 
+        this.opacity = 1;
         this.rotation = 0;
 
         const image = new Image();
@@ -31,6 +32,7 @@ class Player {
 
     draw() {
         context.save();
+        context.globalAlpha = this.opacity;
         context.translate(
             player.position.x + player.width / 2, 
             player.position.y + player.height / 2
@@ -284,6 +286,11 @@ const keys = {
 
 let frames = 0;
 
+const game = {
+    over: false,
+    active: true
+};
+
 const player = new Player();
 const projectiles = [];
 const grids = [];
@@ -307,6 +314,8 @@ for (let i = 0; i < 50; i++) {
 }
 
 function animate() {
+    if (!game.active) return;
+    
     requestAnimationFrame(animate);
     context.fillStyle = 'black';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -336,8 +345,14 @@ function animate() {
             invaderProjectile.position.x + invaderProjectile.width >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width
         ) {
-            console.log('You died');
-            setTimeout(() => invaderProjectiles.splice(index, 1), 0);
+            setTimeout(() => {
+                invaderProjectiles.splice(index, 1);
+                player.opacity = 0;
+                game.over = true;
+            }, 0);
+
+            setTimeout(() => game.active = false, 2000);
+            
             createParticles(player, 'white');
         }
     });
@@ -380,6 +395,8 @@ function animate() {
 animate();
 
 addEventListener('keydown', ({ key }) => {
+    if (game.over) return;
+
     switch (key) {
         case 'a':
             keys.a.pressed = true;
@@ -403,6 +420,8 @@ addEventListener('keydown', ({ key }) => {
 });
 
 addEventListener('keyup', ({ key }) => {
+    if (game.over) return;
+
     switch (key) {
         case 'a':
             keys.a.pressed = false;
