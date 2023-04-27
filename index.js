@@ -147,17 +147,38 @@ class Grid {
     }
 
     update() {
-        this.invaders.forEach((invader) => {
-            invader.update({
-                velocity: this.velocity
+        this.invaders.forEach((invader, invaderIdx) => {
+            invader.update({ velocity: this.velocity });
+
+            projectiles.forEach((projectile, projectileIdx) => {
+                if (projectile.position.y - projectile.radius <= invader.position.y + invader.height &&
+                    projectile.position.x + projectile.radius >= invader.position.x &&
+                    projectile.position.x - projectile.radius <= invader.position.x + invader.width &&
+                    projectile.position.y + projectile.radius >= invader.position.y) {
+                    setTimeout(() => {
+                        this.invaders.splice(invaderIdx, 1);
+                        projectiles.splice(projectileIdx, 1);
+
+                        if (this.invaders.length > 0) {
+                            const firstInvader = this.invaders[0];
+                            const lastInvader = this.invaders[this.invaders.length - 1];
+
+                            this.width = lastInvader.position.x - firstInvader.position.x + lastInvader.width;
+                            this.position.x = firstInvader.position.x;
+                        }
+                    }, 0);
+                }
             });
         });
+
+        this.velocity.y = 0;
 
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
 
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
             this.velocity.x *= -1;
+            this.velocity.y = 30;
         }
     }
 }
@@ -174,9 +195,11 @@ const keys = {
     }
 };
 
+let frames = 0;
+
 const player = new Player();
 const projectiles = [];
-const grids = [new Grid()];
+const grids = [];
 
 function animate() {
     requestAnimationFrame(animate);
@@ -206,6 +229,12 @@ function animate() {
         player.velocity.x = 5;
         player.rotation = 0.15;
     }
+
+    if (frames % Math.floor((Math.random() * 1000) + 1000) === 0) {
+        grids.push(new Grid());
+    }
+
+    frames++;
 }
 
 animate();
@@ -226,7 +255,7 @@ addEventListener('keydown', ({ key }) => {
                 },
                 velocity: {
                     x: 0,
-                    y: -2
+                    y: -10
                 }
             }));
             break;
