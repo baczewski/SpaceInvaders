@@ -1,8 +1,11 @@
 const canvas = document.querySelector('canvas');
+const scoreElement = document.querySelector('#score');
 const context = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+let score = 0;
 
 class Player {
     constructor() {
@@ -242,6 +245,9 @@ class Grid {
                     projectile.position.x - projectile.radius <= invader.position.x + invader.width &&
                     projectile.position.y + projectile.radius >= invader.position.y
                 ) {
+                    score += 100;
+                    scoreElement.textContent = score;
+
                     createParticles(invader);
                         
                     setTimeout(() => {
