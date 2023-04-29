@@ -6,6 +6,7 @@ canvas.width = window.innerWidth * 0.95;
 canvas.height = window.innerHeight * 0.95;
 
 let score = 0;
+let canShoot = true;
 
 class Player {
     constructor() {
@@ -423,6 +424,8 @@ addEventListener('keydown', ({ key }) => {
             keys.d.pressed = true;
             break;
         case ' ':
+            if (!canShoot) return;
+
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,
@@ -433,6 +436,9 @@ addEventListener('keydown', ({ key }) => {
                     y: -10
                 }
             }));
+
+            canShoot = false;
+            setTimeout(() => canShoot = true, 100);
             break;
     }
 });
