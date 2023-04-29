@@ -379,14 +379,16 @@ function animate() {
         if (grid.invaders.length === 0) {
             score += 1000;
             scoreElement.textContent = score;
-            
+
             setTimeout(() => grids.splice(index, 1), 0);
         } else {
             grid.update();
 
             if (frames % 100 === 0 && grid.invaders.length > 0) {
-                const randomInvaderIndex = Math.floor(Math.random() * (grid.invaders.length - 1));
-                grid.invaders[randomInvaderIndex].shoot(invaderProjectiles);         
+                for (let i = 0; i < (Math.random() * 5) + 1; i++) {
+                    const randomInvaderIndex = Math.floor(Math.random() * (grid.invaders.length - 1));
+                    grid.invaders[randomInvaderIndex].shoot(invaderProjectiles); 
+                }
             }
         }
     });
