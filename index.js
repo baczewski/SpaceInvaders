@@ -376,12 +376,19 @@ function animate() {
         }
     });
 
+
     grids.forEach((grid, index) => {
         if (grid.invaders.length === 0) {
             score += 1000;
             scoreElement.textContent = score;
 
-            setTimeout(() => grids.splice(index, 1), 0);
+            setTimeout(() => {
+                grids.splice(index, 1);
+
+                if (grids.length === 0) {
+                    frames = spawnInterval;
+                }
+            }, 0);
         } else {
             grid.update();
 
