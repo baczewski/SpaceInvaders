@@ -387,10 +387,10 @@ function animate() {
     player.rotation = 0;
 
     if (keys.a.pressed && player.position.x >= 0) {
-        player.velocity.x = -5;
+        player.velocity.x = -10;
         player.rotation = -0.15;
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {
-        player.velocity.x = 5;
+        player.velocity.x = 10;
         player.rotation = 0.15;
     }
 
