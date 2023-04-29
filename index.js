@@ -2,8 +2,8 @@ const canvas = document.querySelector('canvas');
 const scoreElement = document.querySelector('#score');
 const context = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth * 0.95;
+canvas.height = window.innerHeight * 0.95;
 
 let score = 0;
 
@@ -204,6 +204,8 @@ const createParticles = (object, color) => {
     }
 }
 
+let gridVelocity = 4;
+
 class Grid {
     constructor() {
         this.position = {
@@ -212,7 +214,7 @@ class Grid {
         };
 
         this.velocity = {
-            x: 4,
+            x: gridVelocity,
             y: 0
         };
 
@@ -291,6 +293,7 @@ const keys = {
 };
 
 let frames = 0;
+let spawnInterval = 2000;
 
 const game = {
     over: false,
@@ -391,8 +394,17 @@ function animate() {
         player.rotation = 0.15;
     }
 
-    if (frames % Math.floor((Math.random() * 1000) + 1000) === 0) {
+    if (frames % spawnInterval === 0) {
+        if (gridVelocity <= 10) {
+            gridVelocity += 0.2;
+        }
+
         grids.push(new Grid());
+        frames = 0;
+
+        if (spawnInterval >= 500) {
+            spawnInterval -= spawnInterval >= 1000 ? 100 : 50;
+        }
     }
 
     frames++;
