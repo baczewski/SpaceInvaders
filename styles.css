@@ -11,12 +11,22 @@
     left: 10px;
 }
 
+.next-wave-wrapper {
+    font-size: 20px;
+    color: white;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: black;
 }
 
 .field-wrapper {
     position: relative;
+    margin-top: 10px;
 }

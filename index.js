@@ -1,5 +1,6 @@
 const canvas = document.querySelector('canvas');
 const scoreElement = document.querySelector('#score');
+const nextWaveElement = document.querySelector('#next-wave');
 const context = canvas.getContext('2d');
 
 canvas.width = window.innerWidth * 0.95;
@@ -416,6 +417,8 @@ function animate() {
             spawnInterval -= spawnInterval >= 1000 ? 100 : 50;
         }
     }
+
+    nextWaveElement.textContent = parseInt((spawnInterval - frames) / 60);
 
     frames++;
 }
