@@ -1,11 +1,13 @@
 const canvas = document.querySelector('canvas');
 const scoreElement = document.querySelector('#score');
+const nextWaveElement = document.querySelector('#next-wave');
 const context = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth * 0.95;
+canvas.height = window.innerHeight * 0.95;
 
 let score = 0;
+let canShoot = true;
 
 class Player {
     constructor() {
@@ -204,6 +206,8 @@ const createParticles = (object, color) => {
     }
 }
 
+let gridVelocity = 4;
+
 class Grid {
     constructor() {
         this.position = {
@@ -212,7 +216,7 @@ class Grid {
         };
 
         this.velocity = {
-            x: 4,
+            x: gridVelocity,
             y: 0
         };
 
@@ -291,6 +295,7 @@ const keys = {
 };
 
 let frames = 0;
+let spawnInterval = 2000;
 
 const game = {
     over: false,
@@ -371,12 +376,28 @@ function animate() {
         }
     });
 
-    grids.forEach((grid) => {
-        grid.update();
 
-        if (frames % 100 === 0 && grid.invaders.length > 0) {
-            const randomInvaderIndex = Math.floor(Math.random() * (grid.invaders.length - 1));
-            grid.invaders[randomInvaderIndex].shoot(invaderProjectiles);         
+    grids.forEach((grid, index) => {
+        if (grid.invaders.length === 0) {
+            score += 1000;
+            scoreElement.textContent = score;
+
+            setTimeout(() => {
+                grids.splice(index, 1);
+
+                if (grids.length === 0) {
+                    frames = spawnInterval;
+                }
+            }, 0);
+        } else {
+            grid.update();
+
+            if (frames % 100 === 0 && grid.invaders.length > 0) {
+                for (let i = 0; i < (Math.random() * 5) + 1; i++) {
+                    const randomInvaderIndex = Math.floor(Math.random() * (grid.invaders.length - 1));
+                    grid.invaders[randomInvaderIndex].shoot(invaderProjectiles); 
+                }
+            }
         }
     });
 
@@ -384,16 +405,27 @@ function animate() {
     player.rotation = 0;
 
     if (keys.a.pressed && player.position.x >= 0) {
-        player.velocity.x = -5;
+        player.velocity.x = -10;
         player.rotation = -0.15;
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {
-        player.velocity.x = 5;
+        player.velocity.x = 10;
         player.rotation = 0.15;
     }
 
-    if (frames % Math.floor((Math.random() * 1000) + 1000) === 0) {
+    if (frames % spawnInterval === 0) {
+        if (gridVelocity <= 10) {
+            gridVelocity += 0.2;
+        }
+
         grids.push(new Grid());
+        frames = 0;
+
+        if (spawnInterval >= 500) {
+            spawnInterval -= spawnInterval >= 1000 ? 100 : 50;
+        }
     }
+
+    nextWaveElement.textContent = parseInt((spawnInterval - frames) / 60);
 
     frames++;
 }
@@ -411,6 +443,8 @@ addEventListener('keydown', ({ key }) => {
             keys.d.pressed = true;
             break;
         case ' ':
+            if (!canShoot) return;
+
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,
@@ -418,9 +452,12 @@ addEventListener('keydown', ({ key }) => {
                 },
                 velocity: {
                     x: 0,
-                    y: -10
+                    y: -20
                 }
             }));
+
+            canShoot = false;
+            setTimeout(() => canShoot = true, 100);
             break;
     }
 });
